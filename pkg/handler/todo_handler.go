@@ -7,8 +7,10 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"restful-api-golang/pkg/data"
+	"restful-api-golang/pkg/tdo"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -35,4 +37,17 @@ func GetTodoById(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	responseWithJson(writer, http.StatusNotFound, map[string]string{"message": "Todo not found"})
+}
+
+func CreateTodo(writer http.ResponseWriter, request *http.Request) {
+	var newTodo tdo.Todo
+	if err := json.NewDecoder(request.Body).Decode(&newTodo); err != nil {
+		responseWithJson(writer, http.StatusBadRequest, map[string]string{"message": "Inavalid body"})
+		return
+	}
+
+	newTodo.ID = generateId(data.Todos)
+	data.Todos = append(data.Todos, newTodos)
+
+	responseWithJson(writer, http.StatusCreated, newTodo)
 }
