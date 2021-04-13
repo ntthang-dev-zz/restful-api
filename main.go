@@ -15,5 +15,6 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/api/todo", handler.GetAllTodo()).Methods(http.MethodGet)
+	r.HandleFunc("/api/todo", handler.GetAllTodo).Methods(http.MethodGet)
+	r.HandleFunc("/api/todo/{id}", handler.GetTodoById).Methods(http.MethodGet)
 }
