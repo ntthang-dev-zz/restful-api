@@ -47,7 +47,7 @@ func CreateTodo(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	newTodo.ID = generateId(data.Todos)
-	data.Todos = append(data.Todos, newTodos)
+	data.Todos = append(data.Todos, newTodo)
 
 	responseWithJson(writer, http.StatusCreated, newTodo)
 }
@@ -61,7 +61,7 @@ func UpdateTodo(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	var updateTodo dto.Todo
+	var updateTodo tdo.Todo
 	if err := json.NewDecoder(request.Body).Decode(&updateTodo); err != nil {
 		responseWithJson(writer, http.StatusBadRequest, map[string]string{"message": "Invalid body"})
 		return
@@ -72,6 +72,26 @@ func UpdateTodo(writer http.ResponseWriter, request *http.Request) {
 		if todo.ID == id {
 			data.Todos[i] = updateTodo
 			responseWithJson(writer, http.StatusOK, updateTodo)
+			return
+		}
+	}
+
+	responseWithJson(writer, http.StatusNotFound, map[string]string{"message": "Todo not found"})
+}
+
+func DeleteTodo(writer http.ResponseWriter, request *http.Request) {
+	params := mux.Vars(request)
+	id, err := strconv.Atoi(params["id"])
+
+	if err != nil {
+		responseWithJson(writer, http.StatusBadRequest, map[string]string{"message": "Invalid todo id"})
+		return
+	}
+
+	for i, todo := range data.Todos {
+		if todo.ID == id {
+			data.Todos = append(data.Todos[:i], data.Todos[i+1:]...)
+			responseWithJson(writer, http.StatusOK, map[string]string{"message": "Todo was deleted"})
 			return
 		}
 	}
