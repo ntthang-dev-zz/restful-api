@@ -16,10 +16,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Returns the list of TODOs
 func GetAllTodo(writer http.ResponseWriter, request *http.Request) {
 	responseWithJson(writer, http.StatusOK, data.Todos)
 }
 
+// Get TODO information by ID
 func GetTodoById(writer http.ResponseWriter, request *http.Request) {
 	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
@@ -39,6 +41,7 @@ func GetTodoById(writer http.ResponseWriter, request *http.Request) {
 	responseWithJson(writer, http.StatusNotFound, map[string]string{"message": "Todo not found"})
 }
 
+// Create new TODO
 func CreateTodo(writer http.ResponseWriter, request *http.Request) {
 	var newTodo tdo.Todo
 	if err := json.NewDecoder(request.Body).Decode(&newTodo); err != nil {
@@ -52,6 +55,7 @@ func CreateTodo(writer http.ResponseWriter, request *http.Request) {
 	responseWithJson(writer, http.StatusCreated, newTodo)
 }
 
+// Edit the content of TODO
 func UpdateTodo(writer http.ResponseWriter, request *http.Request) {
 	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
@@ -79,6 +83,7 @@ func UpdateTodo(writer http.ResponseWriter, request *http.Request) {
 	responseWithJson(writer, http.StatusNotFound, map[string]string{"message": "Todo not found"})
 }
 
+// Delete TODO
 func DeleteTodo(writer http.ResponseWriter, request *http.Request) {
 	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
@@ -99,12 +104,16 @@ func DeleteTodo(writer http.ResponseWriter, request *http.Request) {
 	responseWithJson(writer, http.StatusNotFound, map[string]string{"message": "Todo not found"})
 }
 
+// Func responseWithJson is a common method containing the settings
+// so that http.ResponseWriter can change and return the response at will.
 func responseWithJson(writer http.ResponseWriter, status int, object interface{}) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(status)
 	json.NewEncoder(writer).Encode(object)
 }
 
+// Func generateId is a method that automatically calculates the ID when
+// creating a new Todo (will be used in the CreateTodo function
 func generateId(todos []tdo.Todo) int {
 	var maxId int
 	for _, todo := range todos {
