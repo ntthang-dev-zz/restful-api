@@ -6,6 +6,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"restful-api-golang/pkg/handler"
 
@@ -13,9 +14,16 @@ import (
 )
 
 func main() {
+	// Initialize the router
 	r := mux.NewRouter()
 
+	// Declare APIs
 	r.HandleFunc("/api/todo", handler.GetAllTodo).Methods(http.MethodGet)
 	r.HandleFunc("/api/todo/{id}", handler.GetTodoById).Methods(http.MethodGet)
 	r.HandleFunc("/api/todo", handler.CreateTodo).Methods(http.MethodPost)
+	r.HandleFunc("/api/todo/{id}", handler.UpdateTodo).Methods(http.MethodPut)
+	r.HandleFunc("/api/todo/{id}", handler.DeleteTodo).Methods(http.MethodDelete)
+
+	// Start the server to let the router listen
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
